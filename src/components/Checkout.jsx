@@ -1,18 +1,18 @@
-import { useContext, useState } from "react";
+import { useState, useContext } from "react";
 import { CartContext } from "../context/CartContext";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase/config";
+import "./Checkout.css";
 
 const Checkout = () => {
-  const { cart, totalPrice, emptyCart } = useContext(CartContext);
+  const { cart, totalCart, clearCart } = useContext(CartContext);
 
   const [buyer, setBuyer] = useState({
     name: "",
-    phone: "",
     email: "",
+    phone: "",
   });
 
-  const [error, setError] = useState("");
   const [orderId, setOrderId] = useState(null);
 
   const handleChange = (e) => {
@@ -25,86 +25,66 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // VALIDACIONES
-    if (!buyer.name || !buyer.phone || !buyer.email) {
-      setError("Todos los campos son obligatorios.");
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(buyer.email)) {
-      setError("El email no es válido.");
-      return;
-    }
-
-    if (!/^[0-9]+$/.test(buyer.phone)) {
-      setError("El teléfono solo debe contener números.");
-      return;
-    }
-
-    setError("");
-
     const order = {
       buyer,
       items: cart,
-      total: totalPrice(),
-      date: Timestamp.now(),
+      total: totalCart(),
+      date: new Date(),
     };
 
     try {
-      const ordersRef = collection(db, "orders");
-      const docRef = await addDoc(ordersRef, order);
-
+      const docRef = await addDoc(collection(db, "orders"), order);
       setOrderId(docRef.id);
-      emptyCart();
-    } catch (err) {
-      setError("Ocurrió un error al crear la orden. Intenta nuevamente.");
-      console.error(err);
+      clearCart();
+    } catch (error) {
+      console.error("Error al crear la orden:", error);
     }
   };
 
   if (orderId) {
     return (
-      <div style={{ padding: "20px" }}>
-        <h2>¡Gracias por tu compra!</h2>
-        <p>Tu número de orden es: <strong>{orderId}</strong></p>
+      <div className="checkout-success">
+        <h2>¡Compra realizada con éxito!</h2>
+        <p>Tu número de orden es:</p>
+        <h3>{orderId}</h3>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Finalizar compra</h2>
+    <div className="checkout-container">
+      <h2>Finalizar Compra</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", width: "300px" }}>
-        
-        <label>Nombre:</label>
+      <form className="checkout-form" onSubmit={handleSubmit}>
         <input
           type="text"
           name="name"
+          placeholder="Nombre completo"
           value={buyer.name}
           onChange={handleChange}
+          required
         />
 
-        <label>Teléfono:</label>
-        <input
-          type="text"
-          name="phone"
-          value={buyer.phone}
-          onChange={handleChange}
-        />
-
-        <label>Email:</label>
         <input
           type="email"
           name="email"
+          placeholder="Correo electrónico"
           value={buyer.email}
           onChange={handleChange}
+          required
         />
 
-        <button type="submit" style={{ marginTop: "20px" }}>
-          Crear orden
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Teléfono"
+          value={buyer.phone}
+          onChange={handleChange}
+          required
+        />
+
+        <button type="submit" className="btn-confirm">
+          Confirmar compra
         </button>
       </form>
     </div>

@@ -10,18 +10,7 @@ const CartWidget = () => {
       <div style={{ position: "relative", cursor: "pointer" }}>
         🛒
         {totalQuantity() > 0 && (
-          <span
-            style={{
-              position: "absolute",
-              top: -8,
-              right: -10,
-              background: "red",
-              color: "white",
-              borderRadius: "50%",
-              padding: "3px 7px",
-              fontSize: "12px",
-            }}
-          >
+          <span style={{ position: "absolute", top: -8, right: -10, background: "red", color: "white", borderRadius: "50%", padding: "3px 7px", fontSize: "12px" }}>
             {totalQuantity()}
           </span>
         )}

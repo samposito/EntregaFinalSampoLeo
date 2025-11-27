@@ -1,43 +1,99 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import "./Cart.css";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { cart, totalPrice, emptyCart } = useContext(CartContext);
+  const {
+    cart,
+    totalCart,
+    removeItem,
+    clearCart,
+    updateItemQuantity,
+  } = useContext(CartContext);
 
   if (cart.length === 0) {
     return (
-      <div style={{ padding: "20px" }}>
-        <h2>El carrito está vacío 🛒</h2>
-        <Link to="/">
-          <button>Volver a comprar</button>
-        </Link>
+      <div className="cart-empty">
+        <h2>Tu carrito está vacío</h2>
+        <Link to="/" className="btn-go-shop">Ver productos</Link>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Carrito</h2>
+    <div className="cart-container">
 
-      {cart.map((prod) => (
-        <div key={prod.id} style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
-          <h3>{prod.title}</h3>
-          <p>Cantidad: {prod.quantity}</p>
-          <p>Precio unidad: ${prod.price}</p>
-          <p>Subtotal: ${prod.quantity * prod.price}</p>
+      <div className="cart-items">
+        <h2>Carrito de compras</h2>
+
+        {cart.map((item) => (
+          <div className="cart-item" key={item.id}>
+            <img src={item.image} className="cart-img" />
+
+            <div className="cart-info">
+              <h3>{item.title}</h3>
+              <p className="cart-category">{item.category}</p>
+              <p className="cart-price">${item.price}</p>
+
+              <div className="cart-qty">
+                <button
+                  onClick={() =>
+                    updateItemQuantity(item.id, Math.max(1, item.quantity - 1))
+                  }
+                >
+                  -
+                </button>
+
+                <span>{item.quantity}</span>
+
+                <button
+                  onClick={() =>
+                    updateItemQuantity(
+                      item.id,
+                      Math.min(item.quantity + 1, item.stock)
+                    )
+                  }
+                >
+                  +
+                </button>
+              </div>
+
+              <button className="btn-remove" onClick={() => removeItem(item.id)}>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        ))}
+
+        <button className="btn-clear" onClick={clearCart}>
+          Vaciar Carrito
+        </button>
+      </div>
+
+      <div className="cart-summary">
+        <h2>Resumen</h2>
+
+        <div className="summary-box">
+          <p className="summary-row">
+            <span>Subtotal:</span> <span>${totalCart()}</span>
+          </p>
+
+          <p className="summary-row">
+            <span>Envío:</span> <span>$0</span>
+          </p>
+
+          <p className="summary-total">
+            <span>Total:</span> <span>${totalCart()}</span>
+          </p>
         </div>
-      ))}
 
-      <h2>Total a pagar: ${totalPrice()}</h2> 
+        <Link to="/checkout" className="btn-checkout">
+          Finalizar compra
+        </Link>
 
-      <button onClick={emptyCart} style={{ marginRight: "10px" }}>
-        Vaciar carrito
-      </button>
+      </div>
 
-      <Link to="/checkout">
-        <button>Finalizar compra</button>
-      </Link>
     </div>
   );
 };

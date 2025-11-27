@@ -8,13 +8,16 @@ const ItemDetailContainer = () => {
   const [item, setItem] = useState(null);
   const { id } = useParams();
 
-
   useEffect(() => {
+    if (!id) return;
+
     const docRef = doc(db, "products", id);
 
     getDoc(docRef).then((snapshot) => {
       if (snapshot.exists()) {
         setItem({ id: snapshot.id, ...snapshot.data() });
+      } else {
+        console.log("El producto no existe");
       }
     });
   }, [id]);

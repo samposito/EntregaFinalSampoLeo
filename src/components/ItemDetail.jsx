@@ -1,50 +1,47 @@
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
-import ItemCount from "./ItemCount";
-import { Link } from "react-router-dom";
+import "./ItemDetail.css";
 
 const ItemDetail = ({ item }) => {
-  const { addToCart } = useContext(CartContext);
-  const [added, setAdded] = useState(false);
+  const { addItem } = useContext(CartContext);
+  const [count, setCount] = useState(1);
 
-  const handleAdd = (quantity) => {
-    addToCart(item, quantity);
-    setAdded(true);
+  if (!item) return <p>Cargando producto...</p>;
+
+  const increase = () => {
+    if (count < item.stock) setCount(count + 1);
+  };
+
+  const decrease = () => {
+    if (count > 1) setCount(count - 1);
+  };
+
+  const handleAdd = () => {
+    addItem(item, count);
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>{item.title}</h2>
+    <div className="detail-container">
 
-      <img src={item.image} alt={item.title} width="250" />
+      <img
+        src={new URL(`../assets/products/${item.image}`, import.meta.url).href}
+        alt={item.title}
+        className="detail-img"
+      />
 
-      <p><strong>Precio:</strong> ${item.price}</p>
-      <p><strong>Stock:</strong> {item.stock}</p>
-      <p><strong>Categoría:</strong> {item.category}</p>
-      <p><strong>Descripción:</strong> {item.description}</p>
+      <h2 className="detail-title">{item.title}</h2>
+      <p className="detail-price">Precio: ${item.price}</p>
+      <p className="detail-stock">Stock: {item.stock}</p>
 
-      {!added && (
-        <ItemCount stock={item.stock} onAdd={handleAdd} />
-      )}
+      <div className="detail-counter">
+        <button onClick={decrease} className="counter-btn">−</button>
+        <span className="counter-value">{count}</span>
+        <button onClick={increase} className="counter-btn">+</button>
+      </div>
 
-      
-      {added && (
-        <div style={{ marginTop: "20px" }}>
-          <h3 style={{ color: "green" }}>Producto agregado al carrito ✔</h3>
-
-          <Link to="/cart">
-            <button style={{ marginTop: "10px" }}>
-              Ir al carrito
-            </button>
-          </Link>
-
-          <Link to="/">
-            <button style={{ marginLeft: "10px" }}>
-              Seguir comprando
-            </button>
-          </Link>
-        </div>
-      )}
+      <button className="btn-add" onClick={handleAdd}>
+        Agregar al carrito
+      </button>
     </div>
   );
 };

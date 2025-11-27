@@ -1,0 +1,48 @@
+.detail-container {
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+}
+
+.detail-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.detail-price,
+.detail-stock {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.detail-counter {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.counter-btn {
+  width: 35px;
+  height: 35px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.counter-value {
+  font-size: 20px;
+}
+
+.btn-add {
+  margin-top: 15px;
+  padding: 10px 15px;
+  background: #0d6efd;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-add:hover {
+  background: #0b5ed7;
+}
